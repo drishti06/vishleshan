@@ -98,7 +98,7 @@ export function AuthModal() {
       // Get redirect path
       const redirectPath =
         res?.payload?.authority == "ROLE_ADMIN"
-          ? "/admin"
+          ? "/admin/dashboard"
           : redirectParams
           ? redirectParams
           : "/";
@@ -192,7 +192,7 @@ export function AuthModal() {
 
   return (
     <div className="fixed z-40 inset-0 bg-black/50 flex items-center justify-center">
-      <div className="bg-white relative rounded-xl mt-[8%] overflow-hidden min-w-[400px] p-8">
+      <div className="dark:bg-black dark:border dark:border-white bg-white relative rounded-xl mt-[8%] overflow-hidden min-w-[400px] p-8">
         <XIcon
           className="absolute top-4 right-4 w-6 h-6 text-gray-500 cursor-pointer"
           onClick={closeLoginModal}

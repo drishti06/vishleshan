@@ -14,6 +14,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./components/AdminLayout";
 import UserLayout from "./components/UserLayout";
 import AdminDashboard from "./pages/AdminDashboard";
+import { RoleBasedRedirector } from "./components/RoleBasedRedirect";
+import OrdersTable from "./components/admin/orders-table";
+import { ProductsTable } from "./components/admin/products-table";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -31,7 +34,12 @@ const router = createBrowserRouter([
   // Public + User Routes
   {
     path: "/",
-    element: <UserLayout />, // For normal users
+    element: (
+      <>
+        <RoleBasedRedirector />
+        <UserLayout />
+      </>
+    ), // For normal users
     children: [
       { path: "/", element: <Homepage /> },
       { path: "/shop", element: <ShopPage /> },
@@ -51,9 +59,9 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "/admin", element: <AdminDashboard /> },
-      { path: "/admin/products", element: <h1>Product Management</h1> },
-      { path: "/admin/orders", element: <h1>Order Management</h1> },
+      { path: "/admin/dashboard", element: <AdminDashboard /> },
+      { path: "/admin/products", element: <ProductsTable /> },
+      { path: "/admin/orders", element: <OrdersTable /> },
       { path: "/admin/users", element: <h1>Order Management</h1> },
     ],
   },

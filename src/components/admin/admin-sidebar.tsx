@@ -15,6 +15,11 @@ import { Link, useLocation } from "react-router";
 
 const sidebarLinks = [
   {
+    title: "Dashboard",
+    href: "/admin/dashboard",
+    icon: BarChart3,
+  },
+  {
     title: "Products",
     href: "/admin/products",
     icon: Package,
@@ -40,7 +45,7 @@ export function AdminSidebar() {
   const { pathname } = useLocation();
 
   return (
-    <div className="flex h-screen w-64 flex-col border-r bg-background">
+    <div className="flex h-screen flex-col border-r bg-background">
       <div className="flex h-14 items-center border-b px-4">
         <Link
           to="/admin/dashboard"
@@ -75,11 +80,11 @@ export function AdminSidebar() {
       <div className="border-t p-4">
         <div className="flex items-center justify-between">
           <ThemeToggle />
-          <Button variant="outline" size="icon">
+          <Button variant="default" size="icon">
             <Settings className="h-4 w-4" />
             <span className="sr-only">Settings</span>
           </Button>
-          <Button variant="outline" size="icon">
+          <Button variant="default" size="icon">
             <LogOut className="h-4 w-4" />
             <span className="sr-only">Logout</span>
           </Button>

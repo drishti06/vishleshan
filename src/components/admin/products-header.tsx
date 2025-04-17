@@ -1,11 +1,11 @@
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Plus } from "lucide-react"
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -13,44 +13,62 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 type Variant = {
-  id: string
-  color: string
-  size: string
-  price: string
-  stock: string
-}
+  id: string;
+  color: string;
+  size: string;
+  price: string;
+  stock: string;
+};
 
 export function ProductsHeader() {
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     category: "",
     image: "",
-  })
-  const [variants, setVariants] = useState<Variant[]>([{ id: "1", color: "", size: "", price: "", stock: "" }])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  });
+  const [variants, setVariants] = useState<Variant[]>([
+    { id: "1", color: "", size: "", price: "", stock: "" },
+  ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleVariantChange = (id: string, field: keyof Variant, value: string) => {
-    setVariants(variants.map((variant) => (variant.id === id ? { ...variant, [field]: value } : variant)))
-  }
+  const handleVariantChange = (
+    id: string,
+    field: keyof Variant,
+    value: string
+  ) => {
+    setVariants(
+      variants.map((variant) =>
+        variant.id === id ? { ...variant, [field]: value } : variant
+      )
+    );
+  };
 
   const addVariant = () => {
     setVariants([
@@ -62,63 +80,67 @@ export function ProductsHeader() {
         price: "",
         stock: "",
       },
-    ])
-  }
+    ]);
+  };
 
   const removeVariant = (id: string) => {
     if (variants.length > 1) {
-      setVariants(variants.filter((variant) => variant.id !== id))
+      setVariants(variants.filter((variant) => variant.id !== id));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // In a real app, this would be an API call to add the product
-      console.log("Product data:", { ...formData, variants })
+      console.log("Product data:", { ...formData, variants });
 
       toast({
         title: "Product added",
         description: `${formData.name} has been added successfully with ${variants.length} variants.`,
-      })
+      });
 
-      setOpenDialog(false)
+      setOpenDialog(false);
       setFormData({
         name: "",
         description: "",
         category: "",
         image: "",
-      })
-      setVariants([{ id: "1", color: "", size: "", price: "", stock: "" }])
+      });
+      setVariants([{ id: "1", color: "", size: "", price: "", stock: "" }]);
     } catch (error) {
-      console.error("Error adding product:", error)
+      console.error("Error adding product:", error);
       toast({
         title: "Error",
         description: "Failed to add product. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
-
+  };
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
+      <div className="text-start">
         <h1 className="text-3xl font-bold tracking-tight">Products</h1>
         <p className="text-muted-foreground">
-          Manage your product inventory, add new products, or update existing ones.
+          Manage your product inventory, add new products, or update existing
+          ones.
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Input type="search" placeholder="Search products..." className="w-full sm:w-[250px]" />
+        <Input
+          type="search"
+          placeholder="Search products..."
+          className="w-full sm:w-[250px]"
+        />
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button onClick={() => setOpenDialog(true)}>
+          <Button variant="default" onClick={() => setOpenDialog(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Add Product
           </Button>
@@ -126,18 +148,25 @@ export function ProductsHeader() {
       </div>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-[650px]">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-auto">
           <DialogHeader>
             <DialogTitle>Add New Product</DialogTitle>
             <DialogDescription>
-              Fill in the details below to add a new product with variants to your inventory.
+              Fill in the details below to add a new product with variants to
+              your inventory.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Product Name</Label>
-                <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="description">Description</Label>
@@ -153,7 +182,9 @@ export function ProductsHeader() {
                 <Label htmlFor="category">Category</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => handleSelectChange("category", value)}
+                  onValueChange={(value) =>
+                    handleSelectChange("category", value)
+                  }
                   required
                 >
                   <SelectTrigger id="category">
@@ -183,7 +214,12 @@ export function ProductsHeader() {
               <div className="mt-4">
                 <div className="flex items-center justify-between">
                   <Label>Product Variants</Label>
-                  <Button type="button" variant="outline" size="sm" onClick={addVariant}>
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    onClick={addVariant}
+                  >
                     Add Variant
                   </Button>
                 </div>
@@ -200,7 +236,12 @@ export function ProductsHeader() {
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Variant {index + 1}</h4>
                         {variants.length > 1 && (
-                          <Button type="button" variant="ghost" size="sm" onClick={() => removeVariant(variant.id)}>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeVariant(variant.id)}
+                          >
                             Remove
                           </Button>
                         )}
@@ -210,7 +251,9 @@ export function ProductsHeader() {
                           <Label htmlFor={`color-${variant.id}`}>Color</Label>
                           <Select
                             value={variant.color}
-                            onValueChange={(value) => handleVariantChange(variant.id, "color", value)}
+                            onValueChange={(value) =>
+                              handleVariantChange(variant.id, "color", value)
+                            }
                             required
                           >
                             <SelectTrigger id={`color-${variant.id}`}>
@@ -229,7 +272,9 @@ export function ProductsHeader() {
                           <Label htmlFor={`size-${variant.id}`}>Size</Label>
                           <Select
                             value={variant.size}
-                            onValueChange={(value) => handleVariantChange(variant.id, "size", value)}
+                            onValueChange={(value) =>
+                              handleVariantChange(variant.id, "size", value)
+                            }
                             required
                           >
                             <SelectTrigger id={`size-${variant.id}`}>
@@ -248,14 +293,22 @@ export function ProductsHeader() {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor={`price-${variant.id}`}>Price ($)</Label>
+                          <Label htmlFor={`price-${variant.id}`}>
+                            Price ($)
+                          </Label>
                           <Input
                             id={`price-${variant.id}`}
                             type="number"
                             min="0"
                             step="0.01"
                             value={variant.price}
-                            onChange={(e) => handleVariantChange(variant.id, "price", e.target.value)}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                variant.id,
+                                "price",
+                                e.target.value
+                              )
+                            }
                             required
                           />
                         </div>
@@ -266,7 +319,13 @@ export function ProductsHeader() {
                             type="number"
                             min="0"
                             value={variant.stock}
-                            onChange={(e) => handleVariantChange(variant.id, "stock", e.target.value)}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                variant.id,
+                                "stock",
+                                e.target.value
+                              )
+                            }
                             required
                           />
                         </div>
@@ -277,7 +336,11 @@ export function ProductsHeader() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpenDialog(false)}>
+              <Button
+                type="button"
+                variant="default"
+                onClick={() => setOpenDialog(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
@@ -288,5 +351,5 @@ export function ProductsHeader() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
