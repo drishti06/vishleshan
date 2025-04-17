@@ -219,7 +219,7 @@ export default function OrdersTable() {
                         handleStatusChange(order.id, value)
                       }
                     >
-                      <SelectTrigger className="w-[130px]">
+                      <SelectTrigger className="max-w-xl">
                         <SelectValue>
                           <Badge
                             variant="outline"
