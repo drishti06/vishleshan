@@ -12,7 +12,6 @@ import {
   Search,
   ShoppingCart,
   User,
-  X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -79,7 +78,7 @@ export function SiteHeader() {
           : "bg-background"
       }`}
     >
-      <div className="container flex h-16 items-center justify-between py-4">
+      <div className="container mx-auto w-full flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-6 md:gap-10">
           <Link to="/" className="flex items-center space-x-2">
             <Package className="h-6 w-6" />
@@ -205,7 +204,7 @@ export function SiteHeader() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+            <SheetContent side="left" className="w-[300px] p-3 sm:w-[400px]">
               <div className="flex flex-col gap-6 py-4">
                 <div className="flex items-center justify-between">
                   <Link
@@ -216,14 +215,6 @@ export function SiteHeader() {
                     <Package className="h-6 w-6" />
                     <span className="font-bold">ShopNow</span>
                   </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close</span>
-                  </Button>
                 </div>
                 <div className="relative w-full">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

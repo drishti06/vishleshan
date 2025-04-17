@@ -5,7 +5,7 @@ import { SiteFooter } from "./layout/site-footer";
 
 const UserLayout = () => {
   return (
-    <div>
+    <div className="w-[99vw]">
       <SiteHeader />
       <Outlet />
       <AuthModal />

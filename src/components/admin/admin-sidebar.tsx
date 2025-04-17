@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Link, useLocation } from "react-router";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { logout } from "@/lib/store/user-slice";
 
 const sidebarLinks = [
   {
@@ -43,6 +45,7 @@ const sidebarLinks = [
 
 export function AdminSidebar() {
   const { pathname } = useLocation();
+  const dispatch = useAppDispatch();
 
   return (
     <div className="flex h-screen flex-col border-r bg-background">
@@ -84,7 +87,14 @@ export function AdminSidebar() {
             <Settings className="h-4 w-4" />
             <span className="sr-only">Settings</span>
           </Button>
-          <Button variant="default" size="icon">
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => {
+              console.log("here");
+              dispatch(logout());
+            }}
+          >
             <LogOut className="h-4 w-4" />
             <span className="sr-only">Logout</span>
           </Button>
