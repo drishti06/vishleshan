@@ -63,20 +63,20 @@ const initialState: UserState = {
       addresses: [],
     },
   ], // Empty until signup
-  // loggedInUser: undefined,
-  loggedInUser: {
-    id: "1744885326220", // Static ID for admin
-    username: "admin", // Static username for admin
-    authority_id: 1, // Higher authority ID for admin
-    authority: "ROLE_ADMIN", // Admin role
-    firstname: "Admin",
-    lastname: "User",
-    email: "admin@mail.com", // Static email for admin
-    number: "1234567890", // Static phone number
-    password: "admin", // Static password (hashed ideally, but this is mock)
-    addresses: [],
-  },
-  isAuthenticated: true,
+  loggedInUser: undefined,
+  // loggedInUser: {
+  //   id: "1744885326220", // Static ID for admin
+  //   username: "admin", // Static username for admin
+  //   authority_id: 1, // Higher authority ID for admin
+  //   authority: "ROLE_ADMIN", // Admin role
+  //   firstname: "Admin",
+  //   lastname: "User",
+  //   email: "admin@mail.com", // Static email for admin
+  //   number: "1234567890", // Static phone number
+  //   password: "admin", // Static password (hashed ideally, but this is mock)
+  //   addresses: [],
+  // },
+  isAuthenticated: false,
   error: null,
   loading: false,
   profileLoading: false,
