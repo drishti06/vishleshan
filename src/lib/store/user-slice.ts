@@ -103,7 +103,6 @@ export const mockSignup = createAsyncThunk(
       password: data.password,
       addresses: [],
     };
-    console.log(fakeUser);
     return fakeUser;
   }
 );

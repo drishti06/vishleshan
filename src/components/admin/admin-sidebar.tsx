@@ -91,7 +91,6 @@ export function AdminSidebar() {
             variant="default"
             size="icon"
             onClick={() => {
-              console.log("here");
               dispatch(logout());
             }}
           >

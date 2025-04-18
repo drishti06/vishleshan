@@ -1,11 +1,18 @@
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Edit, Trash2 } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +20,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,28 +30,30 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
+} from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 type Category = {
-  id: number
-  name: string
-  slug: string
-  description: string
-  productCount: number
-}
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  productCount: number;
+};
 
 export function CategoriesTable() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Simulate API call
@@ -88,88 +97,89 @@ export function CategoriesTable() {
               description: "Toys, games, and entertainment products",
               productCount: 29,
             },
-          ])
-          setLoading(false)
-        }, 1000)
+          ]);
+          setLoading(false);
+        }, 1000);
       } catch (error) {
-        console.error("Error fetching categories:", error)
-        setLoading(false)
+        console.error("Error fetching categories:", error);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   const handleEditCategory = (category: Category) => {
-    setSelectedCategory(category)
-    setEditDialogOpen(true)
-  }
+    setSelectedCategory(category);
+    setEditDialogOpen(true);
+  };
 
   const handleDeleteCategory = (category: Category) => {
-    setSelectedCategory(category)
-    setDeleteDialogOpen(true)
-  }
+    setSelectedCategory(category);
+    setDeleteDialogOpen(true);
+  };
 
   const handleUpdateCategory = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedCategory) return
+    e.preventDefault();
+    if (!selectedCategory) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // In a real app, this would be an API call to update the category
-      setCategories(categories.map((c) => (c.id === selectedCategory.id ? selectedCategory : c)))
+      setCategories(
+        categories.map((c) =>
+          c.id === selectedCategory.id ? selectedCategory : c
+        )
+      );
 
       toast({
         title: "Category updated",
         description: `${selectedCategory.name} has been updated successfully.`,
-      })
+      });
 
-      setEditDialogOpen(false)
+      setEditDialogOpen(false);
     } catch (error) {
-      console.error("Error updating category:", error)
+      console.error("Error updating category:", error);
       toast({
         title: "Error",
         description: "Failed to update category. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleConfirmDelete = async () => {
-    if (!selectedCategory) return
+    if (!selectedCategory) return;
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // In a real app, this would be an API call to delete the category
-      setCategories(categories.filter((c) => c.id !== selectedCategory.id))
+      setCategories(categories.filter((c) => c.id !== selectedCategory.id));
 
-      toast({
-        title: "Category deleted",
-        description: `${selectedCategory.name} has been deleted successfully.`,
-      })
-
-      setDeleteDialogOpen(false)
+      setDeleteDialogOpen(false);
     } catch (error) {
-      console.error("Error deleting category:", error)
+      console.error("Error deleting category:", error);
       toast({
         title: "Error",
         description: "Failed to delete category. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!selectedCategory) return
-    const { name, value } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!selectedCategory) return;
+    const { name, value } = e.target;
 
     // Auto-generate slug from name if name is changed
     if (name === "name") {
@@ -180,18 +190,20 @@ export function CategoriesTable() {
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, ""),
-      })
+      });
     } else {
-      setSelectedCategory({ ...selectedCategory, [name]: value })
+      setSelectedCategory({ ...selectedCategory, [name]: value });
     }
-  }
+  };
 
   return (
     <div className="rounded-md border">
       {loading ? (
         <div className="p-8 text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em]"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading categories...</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Loading categories...
+          </p>
         </div>
       ) : (
         <Table>
@@ -209,17 +221,29 @@ export function CategoriesTable() {
               <TableRow key={category.id}>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{category.slug}</Badge>
+                  <Badge variant="default">{category.slug}</Badge>
                 </TableCell>
-                <TableCell className="max-w-[300px] truncate">{category.description}</TableCell>
-                <TableCell className="text-right">{category.productCount}</TableCell>
+                <TableCell className="max-w-[300px] truncate">
+                  {category.description}
+                </TableCell>
+                <TableCell className="text-right">
+                  {category.productCount}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleEditCategory(category)}>
+                    <Button
+                      variant="default"
+                      size="icon"
+                      onClick={() => handleEditCategory(category)}
+                    >
                       <Edit className="h-4 w-4" />
                       <span className="sr-only">Edit {category.name}</span>
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteCategory(category)}>
+                    <Button
+                      variant="default"
+                      size="icon"
+                      onClick={() => handleDeleteCategory(category)}
+                    >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Delete {category.name}</span>
                     </Button>
@@ -236,7 +260,9 @@ export function CategoriesTable() {
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
             <DialogTitle>Edit Category</DialogTitle>
-            <DialogDescription>Make changes to the category details below.</DialogDescription>
+            <DialogDescription>
+              Make changes to the category details below.
+            </DialogDescription>
           </DialogHeader>
           {selectedCategory && (
             <form onSubmit={handleUpdateCategory}>
@@ -260,7 +286,9 @@ export function CategoriesTable() {
                     onChange={handleInputChange}
                     required
                   />
-                  <p className="text-xs text-muted-foreground">Used in URLs. Auto-generated from name.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Used in URLs. Auto-generated from name.
+                  </p>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="edit-description">Description</Label>
@@ -274,7 +302,11 @@ export function CategoriesTable() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => setEditDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
@@ -292,18 +324,25 @@ export function CategoriesTable() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the category
-              {selectedCategory ? ` "${selectedCategory.name}"` : ""} and may affect products assigned to it.
+              This action cannot be undone. This will permanently delete the
+              category
+              {selectedCategory ? ` "${selectedCategory.name}"` : ""} and may
+              affect products assigned to it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogCancel className="text-white hover:text-white">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

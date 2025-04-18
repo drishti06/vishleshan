@@ -57,7 +57,6 @@ export function CheckoutForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log(formData);
 
     try {
       // Simulate API call

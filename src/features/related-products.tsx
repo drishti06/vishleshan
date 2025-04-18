@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  addToWishlist,
-  removeFromWishlist,
-  type Product,
-} from "@/lib/store/wishlist-slice";
+import { addToWishlist, removeFromWishlist } from "@/lib/store/wishlist-slice";
 import type { RootState } from "@/lib/store/store";
 import { addToCart } from "@/lib/store/cart-slice";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchProductsAsync } from "@/lib/store/category-slice";
+import { Product } from "@/lib/store/product/types";
 
 export function RelatedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+  const dispatch = useAppDispatch();
+  const wishlistItems = useAppSelector(
+    (state: RootState) => state.wishlist.items
+  );
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,39 +27,8 @@ export function RelatedProducts() {
     const fetchProducts = async () => {
       try {
         // In a real app, this would be an API call
-        setTimeout(() => {
-          setProducts([
-            {
-              id: 2,
-              name: "Smart Watch",
-              price: 249.99,
-              image: "/placeholder.svg",
-              category: "electronics",
-            },
-            {
-              id: 4,
-              name: "Mechanical Keyboard",
-              price: 129.99,
-              image: "/placeholder.svg",
-              category: "electronics",
-            },
-            {
-              id: 6,
-              name: "Wireless Mouse",
-              price: 49.99,
-              image: "/placeholder.svg",
-              category: "electronics",
-            },
-            {
-              id: 8,
-              name: "Bluetooth Speaker",
-              price: 79.99,
-              image: "/placeholder.svg",
-              category: "electronics",
-            },
-          ]);
-          setLoading(false);
-        }, 1000);
+        const data = await dispatch(fetchProductsAsync()).unwrap();
+        setProducts(data.filter((d) => +d.price > 10));
       } catch (error) {
         console.error("Error fetching products:", error);
         setLoading(false);
@@ -73,25 +42,25 @@ export function RelatedProducts() {
     const isInWishlist = wishlistItems.some((item) => item.id === product.id);
 
     if (isInWishlist) {
-      dispatch(removeFromWishlist(product.id));
+      dispatch(removeFromWishlist(+product.id));
       toast({
         title: "Removed from wishlist",
-        description: `${product.name} has been removed from your wishlist.`,
+        description: `${product.title} has been removed from your wishlist.`,
       });
     } else {
       dispatch(addToWishlist(product));
       toast({
         title: "Added to wishlist",
-        description: `${product.name} has been added to your wishlist.`,
+        description: `${product.title} has been added to your wishlist.`,
       });
     }
   };
 
   const handleAddToCart = (product: Product) => {
-    dispatch(addToCart({ ...product, quantity: 1 }));
+    dispatch(addToCart({ ...product, stock: 1 }));
     toast({
       title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
+      description: `${product.title} has been added to your cart.`,
     });
   };
 
@@ -149,8 +118,8 @@ export function RelatedProducts() {
                     className="relative block aspect-square overflow-hidden"
                   >
                     <img
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
+                      src={product.images[0] || "/placeholder.svg"}
+                      alt={product.title}
                       width={400}
                       height={400}
                       className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
@@ -181,10 +150,8 @@ export function RelatedProducts() {
                   </Link>
                   <CardContent className="p-4">
                     <Link to={`/product/${product.id}`}>
-                      <h3 className="font-semibold">{product.name}</h3>
-                      <p className="text-lg font-bold">
-                        ${product.price.toFixed(2)}
-                      </p>
+                      <h3 className="font-semibold">{product.title}</h3>
+                      <p className="text-lg font-bold">${product.price}</p>
                     </Link>
                   </CardContent>
                   <CardFooter className="p-4 pt-0">

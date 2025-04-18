@@ -271,7 +271,7 @@ export default function OrdersTable() {
                   <TableCell className="text-right">{order.total}</TableCell>
                   <TableCell className="text-right">
                     <Button
-                      variant="ghost"
+                      variant="default"
                       size="icon"
                       onClick={() => handleViewOrder(order)}
                     >

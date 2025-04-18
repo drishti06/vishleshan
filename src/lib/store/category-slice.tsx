@@ -1,27 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "../store";
-import { dummyData } from "./data";
+import { RootState } from "./store";
 
-interface ProductState {
+interface CategoryState {
   products: Product[];
   loading: boolean;
   error: string | null;
-  product: Product | null;
 }
 
-const initialState: ProductState = {
-  products: dummyData,
+const initialState: CategoryState = {
+  products: [],
   loading: false,
   error: null,
-  product: {
-    id: "",
-    title: "",
-    description: "",
-    category: "",
-    price: "",
-    stock: "",
-    images: [],
-  },
 };
 
 type AddProduct = {
@@ -41,7 +30,7 @@ export const addProduct = createAsyncThunk<
   Product,
   AddProduct,
   { state: RootState; rejectValue: string }
->("products/addProduct", async (productData, { getState, rejectWithValue }) => {
+>("category/addProduct", async (productData, { getState, rejectWithValue }) => {
   const { products } = getState().product;
 
   const isDuplicate = products.some(
@@ -65,7 +54,7 @@ export const fetchProductsAsync = createAsyncThunk<
   Product[],
   void,
   { state: RootState }
->("products/fetchProducts", async (_, { getState }) => {
+>("category/fetchProducts", async (_, { getState }) => {
   // Mocking a real API call: fetching directly from state.
   return getState().product.products;
 });
@@ -75,14 +64,13 @@ export const fetchProductById = createAsyncThunk<
   Product | null,
   string,
   { state: RootState }
->("products/fetchProductById", async (id, { getState }) => {
+>("category/fetchProductById", async (id, { getState }) => {
   const { products } = getState().product;
-  const findMatch = products.find((p) => p.id == id) || null;
-  return findMatch;
+  return products.find((p) => p.id === id) || null;
 });
 
-export const productSlice = createSlice({
-  name: "products",
+export const categorySlice = createSlice({
+  name: "category",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -108,18 +96,6 @@ export const productSlice = createSlice({
         state.products = action.payload;
       })
       .addCase(fetchProductsAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(fetchProductById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchProductById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.product = action.payload;
-      })
-      .addCase(fetchProductById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

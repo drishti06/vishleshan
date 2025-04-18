@@ -60,7 +60,6 @@ export function SiteHeader() {
   }, []);
 
   const handleLoginBtn = () => {
-    console.log(isAuthenticated);
     if (isAuthenticated) {
       navigate("/user/profile");
       return;

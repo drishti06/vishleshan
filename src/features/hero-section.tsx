@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import hero from "@/assets/hero.webp";
 
 export function HeroSection() {
   return (
@@ -60,7 +61,7 @@ export function HeroSection() {
           >
             <div className="aspect-video overflow-hidden rounded-xl bg-foreground/5">
               <img
-                src="/placeholder.svg?height=600&width=800"
+                src={hero}
                 alt="Hero Image"
                 width={800}
                 height={600}

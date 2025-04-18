@@ -52,7 +52,6 @@ export function CategoriesHeader() {
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       // In a real app, this would be an API call to add the category
-      console.log("Category data:", formData)
 
       toast({
         title: "Category added",
@@ -79,7 +78,7 @@ export function CategoriesHeader() {
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
+      <div className="text-start">
         <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
         <p className="text-muted-foreground">Manage product categories and subcategories.</p>
       </div>

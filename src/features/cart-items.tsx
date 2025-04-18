@@ -50,7 +50,6 @@ export function CartItems() {
     (state: RootState) => state.user.isAuthenticated
   );
 
-  console.log(isAuthenticated);
   const { pathname } = useLocation();
   const handleCheckout = () => {
     if (!isAuthenticated) {
