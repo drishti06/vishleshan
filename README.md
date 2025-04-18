@@ -1,4 +1,4 @@
-# 🛒 Vishleshan — E-commerce Web Application
+# 🛒 ShopNow — E-commerce Web Application
 
 ShopNow is a modern and responsive e-commerce web application built with **React**, **TypeScript**, **Vite**, **Redux**, and **shadcn/ui**.  
 It provides a clean shopping experience for users and a simple management interface for admins.
