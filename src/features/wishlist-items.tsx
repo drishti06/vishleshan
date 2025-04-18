@@ -24,7 +24,7 @@ export function WishlistItems() {
   };
 
   const handleAddToCart = (product: any) => {
-    dispatch(addToCart({ ...product, quantity: 1 }));
+    dispatch(addToCart({ ...product, stock: 1 }));
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart and removed from your wishlist.`,
@@ -70,7 +70,7 @@ export function WishlistItems() {
                   variant="ghost"
                   size="icon"
                   className="absolute right-2 top-2 bg-background/80 hover:bg-background/90"
-                  onClick={() => handleRemoveFromWishlist(item.id, item.title)}
+                  onClick={() => handleRemoveFromWishlist(+item.id, item.title)}
                 >
                   <Trash2 className="h-5 w-5 text-muted-foreground" />
                   <span className="sr-only">Remove from wishlist</span>
@@ -81,7 +81,7 @@ export function WishlistItems() {
                   <Link to={`/product/${item.id}`}>
                     <h3 className="font-semibold">{item.title}</h3>
                   </Link>
-                  <p className="text-lg font-bold">${item.price.toFixed(2)}</p>
+                  <p className="text-lg font-bold">${item.price}</p>
                 </div>
                 <Button
                   className="w-full"

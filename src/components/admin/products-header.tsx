@@ -1,7 +1,5 @@
-import type React from "react";
-
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -25,105 +22,82 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-type Variant = {
-  id: string;
-  color: string;
-  size: string;
-  price: string;
-  stock: string;
-};
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppDispatch } from "@/lib/store/hooks";
+import {
+  addProduct,
+  fetchProductsAsync,
+} from "@/lib/store/product/product-slice";
+
+const productSchema = z.object({
+  title: z.string().trim().min(1, "Product name is required."),
+  description: z.string().trim().min(1, "Description is required."),
+  category: z.string().min(1, "Category is required."),
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+    message: "Enter a valid price number",
+  }),
+  stock: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+    message: "Enter a valid stock number",
+  }),
+  images: z.array(z.string().trim()).min(1, "At least one image is required."),
+});
+
+type ProductFormData = z.infer<typeof productSchema>;
 
 export function ProductsHeader() {
   const [openDialog, setOpenDialog] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category: "",
-    image: "",
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      category: "",
+      price: "",
+      stock: "",
+      images: [{ value: "" } as any],
+    } as any,
   });
-  const [variants, setVariants] = useState<Variant[]>([
-    { id: "1", color: "", size: "", price: "", stock: "" },
-  ]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { fields, append, remove } = useFieldArray<any>({
+    control: form.control,
+    name: "images",
+  });
   const { toast } = useToast();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const dispatch = useAppDispatch();
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleVariantChange = (
-    id: string,
-    field: keyof Variant,
-    value: string
-  ) => {
-    setVariants(
-      variants.map((variant) =>
-        variant.id === id ? { ...variant, [field]: value } : variant
-      )
-    );
-  };
-
-  const addVariant = () => {
-    setVariants([
-      ...variants,
-      {
-        id: Date.now().toString(),
-        color: "",
-        size: "",
-        price: "",
-        stock: "",
-      },
-    ]);
-  };
-
-  const removeVariant = (id: string) => {
-    if (variants.length > 1) {
-      setVariants(variants.filter((variant) => variant.id !== id));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // In a real app, this would be an API call to add the product
-      console.log("Product data:", { ...formData, variants });
+      // For now simulate API delay
+      await dispatch(addProduct(data)).unwrap();
 
       toast({
-        title: "Product added",
-        description: `${formData.name} has been added successfully with ${variants.length} variants.`,
+        title: "Product Added",
+        description: `${data.title} has been successfully added.`,
       });
 
       setOpenDialog(false);
-      setFormData({
-        name: "",
-        description: "",
-        category: "",
-        image: "",
-      });
-      setVariants([{ id: "1", color: "", size: "", price: "", stock: "" }]);
+      await dispatch(fetchProductsAsync());
+      form.reset();
     } catch (error) {
-      console.error("Error adding product:", error);
       toast({
         title: "Error",
-        description: "Failed to add product. Please try again.",
+        description: "Something went wrong while adding the product.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="text-start">
@@ -156,198 +130,160 @@ export function ProductsHeader() {
               your inventory.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Product Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="grid gap-4 py-4"
+            >
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter product name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter product description"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="electronics">
+                            Electronics
+                          </SelectItem>
+                          <SelectItem value="clothing">Clothing</SelectItem>
+                          <SelectItem value="home">Home & Kitchen</SelectItem>
+                          <SelectItem value="books">Books</SelectItem>
+                          <SelectItem value="toys">Toys & Games</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price ($)</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) =>
-                    handleSelectChange("category", value)
-                  }
-                  required
-                >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="electronics">Electronics</SelectItem>
-                    <SelectItem value="clothing">Clothing</SelectItem>
-                    <SelectItem value="home">Home & Kitchen</SelectItem>
-                    <SelectItem value="books">Books</SelectItem>
-                    <SelectItem value="toys">Toys & Games</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  name="image"
-                  type="url"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
+                <FormField
+                  control={form.control}
+                  name="stock"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Stock</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
 
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <Label>Product Variants</Label>
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="sm"
-                    onClick={addVariant}
-                  >
-                    Add Variant
-                  </Button>
-                </div>
-
-                <div className="mt-4 space-y-4">
-                  {variants.map((variant, index) => (
+              <div>
+                <FormLabel className="mb-2">Image URLs</FormLabel>
+                <div className="grid gap-3">
+                  {fields.map((fieldItem, index) => (
                     <motion.div
-                      key={variant.id}
-                      className="grid gap-4 rounded-lg border p-4"
-                      initial={{ opacity: 0, y: 20 }}
+                      key={fieldItem.id}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="flex gap-2 items-center"
                     >
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Variant {index + 1}</h4>
-                        {variants.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeVariant(variant.id)}
-                          >
-                            Remove
-                          </Button>
+                      <FormField
+                        control={form.control}
+                        name={`images.${index}`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor={`color-${variant.id}`}>Color</Label>
-                          <Select
-                            value={variant.color}
-                            onValueChange={(value) =>
-                              handleVariantChange(variant.id, "color", value)
-                            }
-                            required
-                          >
-                            <SelectTrigger id={`color-${variant.id}`}>
-                              <SelectValue placeholder="Select color" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="black">Black</SelectItem>
-                              <SelectItem value="white">White</SelectItem>
-                              <SelectItem value="red">Red</SelectItem>
-                              <SelectItem value="blue">Blue</SelectItem>
-                              <SelectItem value="green">Green</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor={`size-${variant.id}`}>Size</Label>
-                          <Select
-                            value={variant.size}
-                            onValueChange={(value) =>
-                              handleVariantChange(variant.id, "size", value)
-                            }
-                            required
-                          >
-                            <SelectTrigger id={`size-${variant.id}`}>
-                              <SelectValue placeholder="Select size" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="xs">XS</SelectItem>
-                              <SelectItem value="s">S</SelectItem>
-                              <SelectItem value="m">M</SelectItem>
-                              <SelectItem value="l">L</SelectItem>
-                              <SelectItem value="xl">XL</SelectItem>
-                              <SelectItem value="standard">Standard</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor={`price-${variant.id}`}>
-                            Price ($)
-                          </Label>
-                          <Input
-                            id={`price-${variant.id}`}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={variant.price}
-                            onChange={(e) =>
-                              handleVariantChange(
-                                variant.id,
-                                "price",
-                                e.target.value
-                              )
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor={`stock-${variant.id}`}>Stock</Label>
-                          <Input
-                            id={`stock-${variant.id}`}
-                            type="number"
-                            min="0"
-                            value={variant.stock}
-                            onChange={(e) =>
-                              handleVariantChange(
-                                variant.id,
-                                "stock",
-                                e.target.value
-                              )
-                            }
-                            required
-                          />
-                        </div>
-                      </div>
+                      />
+                      {fields.length > 1 && (
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          onClick={() => remove(index)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
                     </motion.div>
                   ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => append(" ")}
+                  >
+                    + Add Image
+                  </Button>
                 </div>
               </div>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="default"
-                onClick={() => setOpenDialog(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Adding..." : "Add Product"}
-              </Button>
-            </DialogFooter>
-          </form>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setOpenDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "Adding..." : "Add Product"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

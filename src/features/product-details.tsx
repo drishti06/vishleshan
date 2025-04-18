@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Heart, Minus, Plus, Share2, ShoppingCart, Star } from "lucide-react";
@@ -9,15 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import {
-  addToWishlist,
-  Product,
-  removeFromWishlist,
-} from "@/lib/store/wishlist-slice";
+import { addToWishlist, removeFromWishlist } from "@/lib/store/wishlist-slice";
 import type { RootState } from "@/lib/store/store";
 import { addToCart } from "@/lib/store/cart-slice";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { Product } from "@/lib/store/product/types";
 
 type ProductVariant = {
   id: number;
@@ -105,24 +100,11 @@ export function ProductDetails({ productId }: { productId: string }) {
 
   const handleAddToCart = () => {
     if (product && selectedVariant) {
-      dispatch(
-        addToCart({
-          id: product.id,
-          name: product.name,
-          price: selectedVariant.price,
-          image: product.images[0],
-          category: product.category,
-          quantity,
-          variant: {
-            color: selectedVariant.color,
-            size: selectedVariant.size,
-          },
-        })
-      );
+      dispatch(addToCart(product));
 
       toast({
         title: "Added to cart",
-        description: `${product.name} (${selectedVariant.color}) has been added to your cart.`,
+        description: `${product.title} (${selectedVariant.color}) has been added to your cart.`,
       });
     }
   };
@@ -136,13 +118,13 @@ export function ProductDetails({ productId }: { productId: string }) {
       dispatch(removeFromWishlist(product.id));
       toast({
         title: "Removed from wishlist",
-        description: `${product.name} has been removed from your wishlist.`,
+        description: `${product.title} has been removed from your wishlist.`,
       });
     } else {
       dispatch(
         addToWishlist({
           id: product.id,
-          name: product.name,
+          title: product.title,
           price: selectedVariant?.price || 0,
           image: product.images[0],
           category: product.category,
@@ -150,7 +132,7 @@ export function ProductDetails({ productId }: { productId: string }) {
       );
       toast({
         title: "Added to wishlist",
-        description: `${product.name} has been added to your wishlist.`,
+        description: `${product.title} has been added to your wishlist.`,
       });
     }
   };

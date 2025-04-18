@@ -17,6 +17,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import { RoleBasedRedirector } from "./components/RoleBasedRedirect";
 import OrdersTable from "./components/admin/orders-table";
 import { ProductsTable } from "./components/admin/products-table";
+import CheckoutPage from "./pages/CheckoutPage";
+import CheckoutSuccessPage from "./pages/SuccessPage";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -47,6 +49,8 @@ const router = createBrowserRouter([
       { path: "/categories", element: <CategoryShowcase /> },
       { path: "/cart", element: <CartPage /> },
       { path: "/wishlist", element: <WishlistPage /> },
+      { path: "/checkout", element: <CheckoutPage /> },
+      { path: "/checkout/success", element: <CheckoutSuccessPage /> },
     ],
   },
 

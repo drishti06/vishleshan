@@ -1,97 +1,87 @@
-"use client"
+import type React from "react";
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { useDispatch, useSelector } from "react-redux"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import { clearCart } from "@/lib/store/cart-slice"
-import type { RootState } from "@/lib/store/store"
-import { useToast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { clearCart } from "@/lib/store/cart-slice";
+import type { RootState } from "@/lib/store/store";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 
 export function CheckoutForm() {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const cartItems = useSelector((state: RootState) => state.cart.items)
-  const { toast } = useToast()
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state: RootState) => state.cart.items);
+  const { toast } = useToast();
+
+  const user = useAppSelector((state: RootState) => state.user.loggedInUser);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: user?.firstname || "",
+    lastName: user?.lastname || "",
+    email: user?.email || "",
     phone: "",
     address: "",
     city: "",
     state: "",
     zipCode: "",
-    country: "United States",
-    paymentMethod: "credit-card",
+    country: "India",
+    paymentMethod: "paypal",
     cardNumber: "",
     cardName: "",
     cardExpiry: "",
     cardCvc: "",
     notes: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleRadioChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, paymentMethod: value }))
-  }
+    setFormData((prev) => ({ ...prev, paymentMethod: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
+    console.log(formData);
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      dispatch(clearCart());
 
-      // In a real app, this would be an API call to process the order
-      console.log("Order data:", { items: cartItems, customer: formData })
-
-      dispatch(clearCart())
-
-      toast({
-        title: "Order placed successfully",
-        description: "Thank you for your purchase! Your order has been placed.",
-      })
-
-      router.push("/checkout/success")
+      navigate("/checkout/success");
     } catch (error) {
-      console.error("Error placing order:", error)
+      console.error("Error placing order:", error);
       toast({
         title: "Error",
         description: "Failed to place order. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const shipping = subtotal > 100 ? 0 : 10
-  const total = subtotal + shipping
-
-  if (cartItems.length === 0) {
-    router.push("/cart")
-    return null
-  }
+  const subtotal = cartItems.reduce(
+    (total, item) => total + Number(item.price) * Number(item.stock),
+    0
+  );
+  const shipping = subtotal > 100 ? 0 : 10;
+  const total = subtotal + shipping;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -108,20 +98,46 @@ export function CheckoutForm() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
           </div>
@@ -131,26 +147,56 @@ export function CheckoutForm() {
             <div className="mt-4 grid gap-4">
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
-                <Input id="address" name="address" value={formData.address} onChange={handleChange} required />
+                <Input
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>
-                  <Input id="city" name="city" value={formData.city} onChange={handleChange} required />
+                  <Input
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="state">State</Label>
-                  <Input id="state" name="state" value={formData.state} onChange={handleChange} required />
+                  <Input
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="zipCode">ZIP Code</Label>
-                  <Input id="zipCode" name="zipCode" value={formData.zipCode} onChange={handleChange} required />
+                  <Input
+                    id="zipCode"
+                    name="zipCode"
+                    value={formData.zipCode}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="country">Country</Label>
-                  <Input id="country" name="country" value={formData.country} onChange={handleChange} required />
+                  <Input
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -159,14 +205,17 @@ export function CheckoutForm() {
           <div>
             <h2 className="text-xl font-semibold">Payment Method</h2>
             <div className="mt-4">
-              <RadioGroup value={formData.paymentMethod} onValueChange={handleRadioChange}>
+              <RadioGroup
+                value={formData.paymentMethod}
+                onValueChange={handleRadioChange}
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="credit-card" id="credit-card" />
                   <Label htmlFor="credit-card">Credit Card</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="paypal" id="paypal" />
-                  <Label htmlFor="paypal">PayPal</Label>
+                  <Label htmlFor="paypal">UPI</Label>
                 </div>
               </RadioGroup>
 
@@ -245,23 +294,27 @@ export function CheckoutForm() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-          <Card>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="sticky">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold">Order Summary</h3>
+              <h2 className="text-lg text-start font-semibold">
+                Order Summary
+              </h2>
               <div className="mt-4 space-y-4">
                 {cartItems.map((item) => (
-                  <div key={`${item.id}-${item.variant?.color}-${item.variant?.size}`} className="flex justify-between">
-                    <div>
-                      <span className="font-medium">{item.name}</span>
-                      {item.variant && (
-                        <span className="block text-sm text-muted-foreground">
-                          {item.variant.color}, {item.variant.size}
-                        </span>
-                      )}
-                      <span className="text-sm text-muted-foreground">Qty: {item.quantity}</span>
+                  <div key={`${item.id}`} className="flex justify-between">
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">{item.title}</span>
+
+                      <span className="text-sm text-muted-foreground">
+                        Qty: {item.stock}
+                      </span>
                     </div>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span>${(+item.price * +item.stock).toFixed(2)}</span>
                   </div>
                 ))}
                 <Separator />
@@ -271,7 +324,9 @@ export function CheckoutForm() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                  <span>
+                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-medium">
@@ -281,16 +336,22 @@ export function CheckoutForm() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 p-6 pt-0">
-              <Button className="w-full" size="lg" type="submit" disabled={isSubmitting}>
+              <Button
+                className="w-full"
+                size="lg"
+                type="submit"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Processing..." : "Place Order"}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                By placing your order, you agree to our Terms of Service and Privacy Policy.
+                By placing your order, you agree to our Terms of Service and
+                Privacy Policy.
               </p>
             </CardFooter>
           </Card>
         </motion.div>
       </div>
     </form>
-  )
+  );
 }

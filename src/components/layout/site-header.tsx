@@ -1,5 +1,3 @@
-"use client";
-
 import { motion } from "framer-motion";
 import {
   BaggageClaim,
@@ -122,7 +120,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <div className="hidden md:flex md:items-center md:gap-2">
             <Link to="/wishlist">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="default" size="icon" className="relative">
                 <Heart className="h-5 w-5" />
                 {wishlistItems.length > 0 && (
                   <motion.div
@@ -137,7 +135,7 @@ export function SiteHeader() {
               </Button>
             </Link>
             <Link to="/cart">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="default" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 <CartCounter />
                 <span className="sr-only">Cart</span>

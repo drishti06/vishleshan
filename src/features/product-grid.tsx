@@ -9,7 +9,7 @@ import type { RootState } from "@/lib/store/store";
 import { addToCart } from "@/lib/store/cart-slice";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router";
-import { fetchProducts } from "@/lib/store/product/product-slice";
+import { fetchProductsAsync } from "@/lib/store/product/product-slice";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Product } from "@/lib/store/product/types";
 
@@ -25,14 +25,14 @@ export function ProductGrid() {
   );
 
   useEffect(() => {
-    dispatch(fetchProducts());
+    dispatch(fetchProductsAsync());
   }, [dispatch]);
 
   const handleWishlistToggle = (product: Product) => {
     const isInWishlist = wishlistItems.some((item) => item.id === product.id);
 
     if (isInWishlist) {
-      dispatch(removeFromWishlist(product.id));
+      dispatch(removeFromWishlist(+product.id));
       toast({
         title: "Removed from wishlist",
         description: `${product.title} has been removed from your wishlist.`,
@@ -118,7 +118,7 @@ export function ProductGrid() {
                   {product.category}
                 </Badge>
                 <Button
-                  variant="ghost"
+                  variant="default"
                   size="icon"
                   className="absolute right-2 top-2 bg-background/80 hover:bg-background/90"
                   onClick={(e) => {
@@ -144,9 +144,7 @@ export function ProductGrid() {
               <CardContent className="p-4">
                 <Link to={`/product/${product.id}`}>
                   <h3 className="font-semibold">{product.title}</h3>
-                  <p className="text-lg font-bold">
-                    ${product.price.toFixed(2)}
-                  </p>
+                  <p className="text-lg font-bold">${product.price}</p>
                 </Link>
               </CardContent>
               <CardFooter className="p-4 pt-0">

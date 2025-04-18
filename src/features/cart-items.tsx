@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -13,13 +11,16 @@ import {
 } from "@/lib/store/cart-slice";
 import type { RootState } from "@/lib/store/store";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { openLoginModal } from "@/lib/utils";
 
 export function CartItems() {
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state: RootState) => state.cart.items);
   const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const navigate = useNavigate()
 
   const handleRemoveFromCart = (
     id: number,
@@ -45,22 +46,33 @@ export function CartItems() {
     });
   };
 
+  const isAuthenticated = useAppSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+
+  console.log(isAuthenticated);
+  const { pathname } = useLocation();
   const handleCheckout = () => {
-    setIsCheckingOut(true);
+    if (!isAuthenticated) {
+      openLoginModal(`${pathname}`);
+    } else {
+      setIsCheckingOut(true);
+      navigate('/checkout')
+    }
 
     // Simulate checkout process
-    setTimeout(() => {
-      dispatch(clearCart());
-      toast({
-        title: "Order placed successfully",
-        description: "Thank you for your purchase! Your order has been placed.",
-      });
-      setIsCheckingOut(false);
-    }, 2000);
+    // setTimeout(() => {
+    //   dispatch(clearCart());
+    //   toast({
+    //     title: "Order placed successfully",
+    //     description: "Thank you for your purchase! Your order has been placed.",
+    //   });
+    //   setIsCheckingOut(false);
+    // }, 2000);
   };
 
   const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.stock,
+    (total, item) => total + Number(item.price) * Number(item.stock),
     0
   );
   const shipping = subtotal > 100 ? 0 : 10;
@@ -79,7 +91,6 @@ export function CartItems() {
       </div>
     );
   }
-  console.log(cartItems);
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
@@ -108,40 +119,33 @@ export function CartItems() {
                     <div className="flex flex-1 flex-col justify-between">
                       <div>
                         <h3 className="font-semibold">{item.title}</h3>
-                        {/* {item.variant && (
-                          <p className="text-sm text-muted-foreground">
-                            {item.variant.color}, {item.variant.size}
-                          </p>
-                        )} */}
-                        <p className="mt-1 font-medium">
-                          ${item.price.toFixed(2)}
-                        </p>
+                        <p className="mt-1 font-medium">${item.price}</p>
                       </div>
                       <div className="mt-2 flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <Button
-                            variant="outline"
+                            variant="default"
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
                               handleUpdateQuantity(
-                                item.id,
-                                Math.max(1, item.stock - 1)
+                                +item.id,
+                                Math.max(1, +item.stock - 1)
                                 // item.variant
                               )
                             }
-                            disabled={item.stock <= 1}
+                            disabled={+item.stock <= 1}
                           >
                             <Minus className="h-3 w-3" />
                             <span className="sr-only">Decrease quantity</span>
                           </Button>
                           <span className="w-8 text-center">{item.stock}</span>
                           <Button
-                            variant="outline"
+                            variant="default"
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
-                              handleUpdateQuantity(item.id, item.stock + 1)
+                              handleUpdateQuantity(+item.id, +item.stock + 1)
                             }
                           >
                             <Plus className="h-3 w-3" />
@@ -152,7 +156,7 @@ export function CartItems() {
                           variant="ghost"
                           size="icon"
                           onClick={() =>
-                            handleRemoveFromCart(item.id, item.title)
+                            handleRemoveFromCart(+item.id, item.title)
                           }
                         >
                           <Trash2 className="h-4 w-4" />
@@ -167,7 +171,7 @@ export function CartItems() {
           ))}
         </AnimatePresence>
         <div className="mt-4 flex justify-end">
-          <Button variant="outline" onClick={handleClearCart}>
+          <Button variant="default" onClick={handleClearCart}>
             Clear Cart
           </Button>
         </div>
@@ -195,16 +199,14 @@ export function CartItems() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-2 p-6 pt-0">
-            <Link to="/checkout" className="w-full">
-              <Button
-                className="w-full"
-                size="lg"
-                disabled={isCheckingOut}
-                onClick={handleCheckout}
-              >
-                {isCheckingOut ? "Processing..." : "Checkout"}
-              </Button>
-            </Link>
+            <Button
+              className="w-full"
+              size="lg"
+              disabled={isCheckingOut}
+              onClick={handleCheckout}
+            >
+              {isCheckingOut ? "Processing..." : "Checkout"}
+            </Button>
             <p className="text-center text-xs text-muted-foreground">
               Shipping and taxes calculated at checkout.
             </p>

@@ -5,8 +5,8 @@ export interface CartItem {
   id: number;
   title: string;
   category: string;
-  quantity: number;
-  price: number;
+  quantity: number | string;
+  price: number | string;
 }
 
 interface CartState {
@@ -30,15 +30,13 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    initializeCart: () => {
-      return loadInitialState();
+    initializeCart: (state) => {
+      const loaded = loadInitialState();
+      state.items = loaded.items;
     },
     addToCart: (state, action: PayloadAction<Product>) => {
       const existingItemIndex = state.items.findIndex(
         (item) => item.id === action.payload.id
-        // &&
-        //   item.variant?.color === action.payload.variant?.color &&
-        //   item.variant?.size === action.payload.variant?.size,
       );
 
       if (existingItemIndex >= 0) {
@@ -47,7 +45,6 @@ export const cartSlice = createSlice({
         state.items.push(action.payload);
       }
 
-      // Save to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(state));
       }
@@ -63,7 +60,6 @@ export const cartSlice = createSlice({
         (item) => !(item.id === action.payload.id)
       );
 
-      // Save to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(state));
       }
@@ -83,7 +79,6 @@ export const cartSlice = createSlice({
         state.items[itemIndex].stock = action.payload.quantity;
       }
 
-      // Save to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(state));
       }
@@ -91,7 +86,6 @@ export const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
 
-      // Save to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("cart", JSON.stringify(state));
       }

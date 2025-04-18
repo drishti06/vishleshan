@@ -1,31 +1,40 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function ProductFilters() {
-  const [priceRange, setPriceRange] = useState([0, 500])
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedColors, setSelectedColors] = useState<string[]>([])
+  const [priceRange, setPriceRange] = useState([0, 500]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
-    )
-  }
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
 
   const handleColorChange = (color: string) => {
-    setSelectedColors((prev) => (prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]))
-  }
+    setSelectedColors((prev) =>
+      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
+    );
+  };
 
   const handleReset = () => {
-    setPriceRange([0, 500])
-    setSelectedCategories([])
-    setSelectedColors([])
-  }
+    setPriceRange([0, 500]);
+    setSelectedCategories([]);
+    setSelectedColors([]);
+  };
 
   return (
     <motion.div
@@ -36,14 +45,16 @@ export function ProductFilters() {
     >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Filters</h2>
-        <Button variant="ghost" size="sm" onClick={handleReset}>
+        <Button variant="ghost" size="sm" className="hover:text-white" onClick={handleReset}>
           Reset
         </Button>
       </div>
       <div className="space-y-4">
         <Accordion type="single" collapsible defaultValue="categories">
           <AccordionItem value="categories">
-            <AccordionTrigger>Categories</AccordionTrigger>
+            <AccordionTrigger className="text-white mb-4">
+              Categories
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
@@ -90,7 +101,9 @@ export function ProductFilters() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="price">
-            <AccordionTrigger>Price Range</AccordionTrigger>
+            <AccordionTrigger className="text-white mb-4">
+              Price Range
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
                 <Slider
@@ -98,7 +111,9 @@ export function ProductFilters() {
                   max={500}
                   step={10}
                   value={priceRange}
-                  onValueChange={(value) => setPriceRange(value as [number, number])}
+                  onValueChange={(value) =>
+                    setPriceRange(value as [number, number])
+                  }
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-sm">${priceRange[0]}</span>
@@ -108,7 +123,7 @@ export function ProductFilters() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="colors">
-            <AccordionTrigger>Colors</AccordionTrigger>
+            <AccordionTrigger className="text-white mb-4">Colors</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
@@ -157,5 +172,5 @@ export function ProductFilters() {
         </Accordion>
       </div>
     </motion.div>
-  )
+  );
 }

@@ -257,20 +257,10 @@ export function AuthModal() {
                       )}
                     />
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="remember"
-                          checked={rememberMe}
-                          onCheckedChange={handleRememberMeChange}
-                        />
-                        <label htmlFor="remember" className="text-sm">
-                          Remember me
-                        </label>
-                      </div>
-                      <button className="text-sm text-primary hover:underline">
+                    <div className="flex items-center justify-end">
+                      <span className="text-sm underline hover:text-blue-700">
                         Forgot password?
-                      </button>
+                      </span>
                     </div>
 
                     <Button
@@ -284,12 +274,13 @@ export function AuthModal() {
 
                 <p className="text-center text-sm text-gray-500">
                   Don't have an account?{" "}
-                  <button
+                  <Button
+                    variant="default"
                     onClick={() => setIsLogin(false)}
                     className="text-[#776e45] hover:underline"
                   >
                     Sign Up
-                  </button>
+                  </Button>
                 </p>
               </div>
             </motion.div>
@@ -391,12 +382,13 @@ export function AuthModal() {
 
                 <p className="text-center text-sm text-gray-500">
                   Already have an account?{" "}
-                  <button
+                  <Button
+                    variant="default"
                     onClick={() => setIsLogin(true)}
                     className="text-primary hover:underline"
                   >
                     Sign in
-                  </button>
+                  </Button>
                 </p>
               </div>
             </motion.div>

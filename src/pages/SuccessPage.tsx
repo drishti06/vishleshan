@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
@@ -13,11 +11,11 @@ export default function CheckoutSuccessPage() {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const navigate = useNavigate();
   // Redirect to home if cart is not empty (meaning they didn't complete checkout)
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      navigate("/");
-    }
-  }, [cartItems]);
+  // useEffect(() => {
+  //   if (cartItems.length > 0) {
+  //     navigate("/");
+  //   }
+  // }, [cartItems]);
 
   return (
     <div className="container flex flex-col items-center justify-center px-4 py-16 text-center md:px-6 md:py-24">
@@ -55,7 +53,7 @@ export default function CheckoutSuccessPage() {
           <Button size="lg">Return to Home</Button>
         </Link>
         <Link to="/shop">
-          <Button variant="outline" size="lg">
+          <Button variant="default" size="lg">
             Continue Shopping
           </Button>
         </Link>

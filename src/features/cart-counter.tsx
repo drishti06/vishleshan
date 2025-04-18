@@ -1,14 +1,18 @@
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store/store";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { initializeCart } from "@/lib/store/cart-slice";
+import { useEffect } from "react";
 
 export function CartCounter() {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useAppDispatch();
 
-  const totalItems = cartItems?.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  useEffect(() => {
+    dispatch(initializeCart());
+  }, [dispatch]);
+  const cartItems = useAppSelector((state: RootState) => state.cart.items);
+
+  const totalItems = cartItems?.reduce((total, item) => total + +item.stock, 0);
 
   if (totalItems === 0) return null;
 
